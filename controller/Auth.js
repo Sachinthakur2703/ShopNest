@@ -70,7 +70,7 @@ exports.checkAuth=async(req,res)=>{
        await user.save()
 
        //also set token in email
-    const resetPageLink ="/reset-password?token="+token+"&email="+email;
+    const resetPageLink ="https://shop-nest-blue.vercel.app/reset-password?token="+token+"&email="+email;
     const subject="reset password for e-commerce";
     const html=`<p>Click<a href='${resetPageLink}'>here </a> to Reset Password</p>`
 
