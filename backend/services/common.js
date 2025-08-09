@@ -1,15 +1,15 @@
 const passport=require("passport")
-const nodemailer=require("nodemailer")
+const Brevo = require('@getbrevo/brevo');
+require('dotenv').config();
 
-let transporter=nodemailer.createTransport({
-  host:"smtp.gmail.com",
-  port:587,
-  secure:false,
-  auth:{
-    user:"sachinthakur2326@gmail.com",
-    pass:process.env.EMAIL_KEY
-    },
-})
+const {
+  BREVO_SMTP_KEY,
+  BREVO_SENDER_MAIL,
+  BREVO_SENDER_NAME
+} = process.env;
+
+const apiInstance = new Brevo.TransactionalEmailsApi();
+apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, BREVO_SMTP_KEY);
 
 
 
@@ -31,15 +31,19 @@ exports.cookieExtractor=function(req){
   //we dont want to give external access
 exports.sendMail=async function({to,subject,text,html}){
   
-  let info=await transporter.sendMail({
-    from:`"E-commerce" <sachinthakur2326@gmail.com>`,
-    to,
-    subject,
-    text,
-    html
-    
-  })
- return info;
+  const emailData = {
+    sender: {
+      email: BREVO_SENDER_MAIL,
+      name: BREVO_SENDER_NAME
+    },
+    to: [{ email: to }],
+    subject: subject,
+    htmlContent: html,
+    textContent: text
+  };
+  let info=await apiInstance.sendTransacEmail(emailData);
+  return info;
+
 }
 exports.invoiceTemplate = function(order){
 
